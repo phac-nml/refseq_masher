@@ -25,10 +25,10 @@ install:
   - conda config --add channels defaults
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
-  - conda install mash -y
+  - conda install mash numpy pandas click -y
   - python setup.py -q install
   - pip install pytest
 
 script:
-  - refseq_masher -v
+  - refseq_masher --version
   - pytest
