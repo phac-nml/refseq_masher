@@ -31,4 +31,7 @@ install:
 
 script:
   - refseq_masher --version
+  - refseq_masher --help
+  - refseq_masher matches --help
+  - refseq_masher contains --help
   - pytest
