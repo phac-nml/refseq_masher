@@ -1,0 +1,8 @@
+include LICENSE
+include NOTICE
+include README.md
+include MANIFEST.in
+include setup.py
+recursive-include *.py *.msh *.csv
+exclude ipynbs
+exclude venv

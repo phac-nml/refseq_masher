@@ -1,27 +1,17 @@
 # -*- coding: utf-8 -*-
-# import logging
+
 import re
 from pkg_resources import resource_filename
 
-import pandas as pd
-
 from . import program_name
 
+#: Mash sketch database with sketches from 54,925 RefSeq genomes package resource path
 MASH_REFSEQ_MSH = resource_filename(program_name, 'data/RefSeqSketches.msh')
-NCBI_TAXID_INFO_CSV = resource_filename(program_name, 'data/refseq-taxid-info.csv')
-
-
-def read_taxid_info_csv():
-    # logging.error('Reading NCBI Taxonomy ID info from %s', NCBI_TAXID_INFO_CSV)
-
-    df = pd.read_csv(NCBI_TAXID_INFO_CSV)
-    # logging.error('Read NCBI Taxonomy ID info table with %s rows, %s cols', df.shape[0], df.shape[1])
-    return df
-
-NCBI_TAXID_INFO = read_taxid_info_csv()
-
+#: Regex for matching FASTQ filenames with optional .gz
 REGEX_FASTQ = re.compile(r'^(.+)\.(fastq|fq)(\.gz)?$')
+#: Regex for matching FASTA filenames with optional .gz
 REGEX_FASTA = re.compile(r'^.+\.(fasta|fa|fna|fas)(\.gz)?$')
+#: Ordered Mash dist and select taxonomy columns
 MASH_DIST_ORDERED_COLUMNS = '''
 sample
 top_taxonomy_name
@@ -47,6 +37,7 @@ taxid
 assembly_accession
 match_id
 '''.strip().split('\n')
+#: Ordered Mash screen and select taxonomy columns
 MASH_SCREEN_ORDERED_COLUMNS = '''
 sample
 top_taxonomy_name

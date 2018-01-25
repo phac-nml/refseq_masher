@@ -4,7 +4,7 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
-from refseq_masher import __version__, program_summary, program_name, program_desc
+from refseq_masher import __version__, program_name, program_desc
 
 classifiers = """
 Development Status :: 3 - Alpha
@@ -19,6 +19,13 @@ Programming Language :: Python :: Implementation :: CPython
 Operating System :: POSIX :: Linux
 """.strip().split('\n')
 
+
+def get_long_description():
+    import codecs
+    with codecs.open('README.md', encoding='UTF-8') as f:
+        return f.read()
+
+
 setup(
     name=program_name,
     version=__version__,
@@ -28,6 +35,7 @@ setup(
     author='Peter Kruczkiewicz',
     author_email='peter.kruczkiewicz@gmail.com',
     description=program_desc,
+    long_description=get_long_description(),
     keywords='Mash MinHash RefSeq Taxonomic Classification Containment Sequencing',
     classifiers=classifiers,
     package_dir={program_name: program_name},

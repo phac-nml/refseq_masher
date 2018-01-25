@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Main script for refseq_masher with commands for running Mash dist and Mash
-screen against a NCBI RefSeq genomes sketch database.
-
+"""Main CLI script for refseq_masher with commands for running Mash dist
+(matches) and Mash screen (contains) against a bundled NCBI RefSeq genomes
+sketch database of 54,925 genomes that were Mash sketched at k=16, s=400.
 """
 
 import click
@@ -12,14 +12,13 @@ from typing import List
 
 import pandas as pd
 
-from refseq_masher.const import MASH_DIST_ORDERED_COLUMNS, MASH_SCREEN_ORDERED_COLUMNS
-from refseq_masher.masher import mash_dist_fasta_against_refseq, mash_dist_fastq_against_refseq, \
-    mash_screen_against_refseq
-from refseq_masher.taxonomy import merge_ncbi_taxonomy_info
-from refseq_masher.utils import collect_inputs, init_console_logger, order_output_columns
-from refseq_masher.writers import write_dataframe, OUTPUT_TYPES
-from .utils import \
-    exc_exists
+import refseq_masher.mash.dist as mash_dist
+import refseq_masher.mash.screen as mash_screen
+from .const import MASH_DIST_ORDERED_COLUMNS, MASH_SCREEN_ORDERED_COLUMNS
+from .taxonomy import merge_ncbi_taxonomy_info
+from .utils import collect_inputs, init_console_logger, order_output_columns
+from .writers import write_dataframe, OUTPUT_TYPES
+from .utils import exc_exists
 
 SCRIPT_NAME = 'refseq_masher'
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -55,9 +54,9 @@ def cli(verbose):
 @click.option('--output-type', default='tab',
               type=click.Choice(OUTPUT_TYPES.keys()),
               help='Output file type ({})'.format('|'.join(OUTPUT_TYPES.keys())))
-@click.option('--top-n-results', default=5, type=int,
+@click.option('-n', '--top-n-results', default=5, type=int,
               help='Output top N results sorted by distance in ascending order (default=5)')
-@click.option('--min-kmer-threshold', type=int, default=8,
+@click.option('-m', '--min-kmer-threshold', type=int, default=8,
               help='Mash sketch of reads: "Minimum copies of each k-mer '
                    'required to pass noise filter for reads" (default=8)')
 @click.argument('input', type=click.Path(exists=True), nargs=-1, required=True)
@@ -72,17 +71,17 @@ def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, in
     logging.debug('contigs: %s', contigs)
     logging.debug('reads: %s', reads)
     for fasta_path, sample_name in contigs:
-        df = mash_dist_fasta_against_refseq(fasta_path,
-                                            mash_bin=mash_bin,
-                                            sample_name=sample_name)
+        df = mash_dist.fasta_vs_refseq(fasta_path,
+                             mash_bin=mash_bin,
+                             sample_name=sample_name)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)
     for fastq_paths, sample_name in reads:
-        df = mash_dist_fastq_against_refseq(fastq_paths,
-                                            mash_bin=mash_bin,
-                                            sample_name=sample_name,
-                                            m=min_kmer_threshold)
+        df = mash_dist.fastq_vs_refseq(fastq_paths,
+                             mash_bin=mash_bin,
+                             sample_name=sample_name,
+                             m=min_kmer_threshold)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)
@@ -104,7 +103,7 @@ def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, in
 @click.option('--output-type', default='tab',
               type=click.Choice(OUTPUT_TYPES.keys()),
               help='Output file type ({})'.format('|'.join(OUTPUT_TYPES.keys())))
-@click.option('--top-n-results', default=0, type=int,
+@click.option('-n', '--top-n-results', default=0, type=int,
               help='Output top N results sorted by identity in ascending order (default=0/all)')
 @click.option('-i','--min-identity', default=0.9, type=float,
               help='Mash screen min identity to report (default=0.9)')
@@ -123,12 +122,12 @@ def contains(mash_bin, output, output_type, top_n_results, min_identity, max_pva
     contigs, reads = collect_inputs(input)
 
     for input_paths, sample_name in (contigs + reads):
-        df = mash_screen_against_refseq(inputs=input_paths,
-                                        mash_bin=mash_bin,
-                                        sample_name=sample_name,
-                                        max_pvalue=max_pvalue,
-                                        min_identity=min_identity,
-                                        parallelism=parallelism)
+        df = mash_screen.vs_refseq(inputs=input_paths,
+                       mash_bin=mash_bin,
+                       sample_name=sample_name,
+                       max_pvalue=max_pvalue,
+                       min_identity=min_identity,
+                       parallelism=parallelism)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)

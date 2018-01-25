@@ -2,7 +2,7 @@
 
 __version__ = '0.1.0'
 program_name = 'refseq_masher'
-program_summary = 'Mash MinHash search your reads or contigs against a NCBI RefSeq genomes database'
+program_summary = 'Mash MinHash search your sequences against a NCBI RefSeq genomes database'
 program_desc = program_summary + '''
 
 Mash: fast genome and metagenome distance estimation using MinHash.

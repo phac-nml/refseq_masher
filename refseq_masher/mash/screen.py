@@ -1,19 +1,34 @@
+# -*- coding: utf-8 -*-
+
 import logging
 from typing import Union, List
 
 import pandas as pd
 
-from .const import MASH_REFSEQ_MSH
 from .parser import mash_screen_output_to_dataframe
-from .utils import run_command
+from ..const import MASH_REFSEQ_MSH
+from ..utils import run_command
 
 
-def mash_screen_against_refseq(inputs: Union[str, List[str]],
-                               mash_bin: str = 'mash',
-                               sample_name: str = None,
-                               max_pvalue: float = 0.01,
-                               min_identity: float = 0.9,
-                               parallelism: int = 1) -> pd.DataFrame:
+def vs_refseq(inputs: Union[str, List[str]],
+              mash_bin: str = 'mash',
+              sample_name: str = None,
+              max_pvalue: float = 0.01,
+              min_identity: float = 0.9,
+              parallelism: int = 1) -> pd.DataFrame:
+    """Run Mash screen with the RefSeq genomes sketch database against some input sequence files
+
+    Args:
+        inputs: Input sequence files
+        mash_bin: Mash binary path
+        sample_name: Sample name
+        max_pvalue: Mash screen max p-value to report
+        min_identity: Mash screen min identity to report
+        parallelism: Mash screen number of parallel threads to spawn
+
+    Returns:
+        (pd.DataFrame): Parsed Mash screen results dataframe
+    """
     cmd_list = [mash_bin, 'screen',
                 '-v', str(max_pvalue),
                 '-p', str(parallelism),

@@ -4,6 +4,30 @@ from typing import Optional
 
 import pandas as pd
 
+#: Sometimes Mash dist outputs 4 columns other times it outputs 5 columns
+MASH_DIST_4_COLUMNS = """
+match_id
+distance
+pvalue
+matching
+""".strip().split('\n')
+MASH_DIST_5_COLUMNS = """
+match_id
+query_id
+distance
+pvalue
+matching
+""".strip().split('\n')
+#: Mash screen output columns
+MASH_SCREEN_COLUMNS = """
+identity
+shared_hashes
+median_multiplicity
+pvalue
+match_id
+match_comment
+""".strip().split('\n')
+
 
 def _no_periods(s: str) -> Optional[str]:
     return s if s != '.' else None
@@ -57,29 +81,6 @@ def parse_refseq_info(match_id: str) -> dict:
                 plasmid=_no_periods(plasmid),
                 serovar=serovar,
                 subspecies=subsp)
-
-
-MASH_DIST_4_COLUMNS = """
-match_id
-distance
-pvalue
-matching
-""".strip().split('\n')
-MASH_DIST_5_COLUMNS = """
-match_id
-query_id
-distance
-pvalue
-matching
-""".strip().split('\n')
-MASH_SCREEN_COLUMNS = """
-identity
-shared_hashes
-median_multiplicity
-pvalue
-match_id
-match_comment
-""".strip().split('\n')
 
 
 def mash_dist_output_to_dataframe(mash_out: str) -> pd.DataFrame:

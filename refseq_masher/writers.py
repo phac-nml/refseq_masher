@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import logging
 
 import click
 import pandas as pd
 
+OUTPUT_TYPES = {'tab': '\t',
+                'csv': ','}
 
 def write_dataframe(dfout: pd.DataFrame,
                     output_path: str,
@@ -16,5 +20,3 @@ def write_dataframe(dfout: pd.DataFrame,
         logging.info('Wrote output to "%s"', output_path)
 
 
-OUTPUT_TYPES = {'tab': '\t',
-                'csv': ','}

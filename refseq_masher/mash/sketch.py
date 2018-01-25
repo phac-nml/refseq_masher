@@ -3,7 +3,7 @@ import os
 from subprocess import Popen, PIPE
 from typing import List
 
-from .utils import sample_name_from_fasta_path, run_command, sample_name_from_fastq_paths
+from ..utils import sample_name_from_fasta_path, run_command, sample_name_from_fastq_paths
 
 
 def sketch_fasta(fasta_path, mash_bin="mash", tmp_dir="/tmp", sample_name=None, k=16, s=400):
