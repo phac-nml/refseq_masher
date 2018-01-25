@@ -39,7 +39,7 @@ setup(
     keywords='Mash MinHash RefSeq Taxonomic Classification Containment Sequencing',
     classifiers=classifiers,
     package_dir={program_name: program_name},
-    package_data={program_name: ['data/*.msh',]},
+    package_data={program_name: ['data/*.msh', 'data/*.csv']},
     install_requires=[
         'numpy>=1.12.1',
         'pandas>=0.20.1',
