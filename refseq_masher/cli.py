@@ -59,29 +59,32 @@ def cli(verbose):
 @click.option('-m', '--min-kmer-threshold', type=int, default=8,
               help='Mash sketch of reads: "Minimum copies of each k-mer '
                    'required to pass noise filter for reads" (default=8)')
+@click.option('-T', '--tmp-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True))
 @click.argument('input', type=click.Path(exists=True), nargs=-1, required=True)
-def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, input):
+def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, tmp_dir, input):
     """Find NCBI RefSeq genome matches for an input genome fasta file
 
     Input is expected to be one or more FASTA/FASTQ files or one or more
     directories containing FASTA/FASTQ files. Files can be Gzipped.
     """
-    dfs = [] # type: List[pd.DataFrame]
+    dfs = []  # type: List[pd.DataFrame]
     contigs, reads = collect_inputs(input)
     logging.debug('contigs: %s', contigs)
     logging.debug('reads: %s', reads)
     for fasta_path, sample_name in contigs:
         df = mash_dist.fasta_vs_refseq(fasta_path,
-                             mash_bin=mash_bin,
-                             sample_name=sample_name)
+                                       mash_bin=mash_bin,
+                                       sample_name=sample_name,
+                                       tmp_dir=tmp_dir)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)
     for fastq_paths, sample_name in reads:
         df = mash_dist.fastq_vs_refseq(fastq_paths,
-                             mash_bin=mash_bin,
-                             sample_name=sample_name,
-                             m=min_kmer_threshold)
+                                       mash_bin=mash_bin,
+                                       sample_name=sample_name,
+                                       m=min_kmer_threshold,
+                                       tmp_dir=tmp_dir)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)
@@ -105,11 +108,11 @@ def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, in
               help='Output file type ({})'.format('|'.join(OUTPUT_TYPES.keys())))
 @click.option('-n', '--top-n-results', default=0, type=int,
               help='Output top N results sorted by identity in ascending order (default=0/all)')
-@click.option('-i','--min-identity', default=0.9, type=float,
+@click.option('-i', '--min-identity', default=0.9, type=float,
               help='Mash screen min identity to report (default=0.9)')
-@click.option('-v','--max-pvalue', default=0.01, type=float,
+@click.option('-v', '--max-pvalue', default=0.01, type=float,
               help='Mash screen max p-value to report (default=0.01)')
-@click.option('-p','--parallelism', default=1, type=int,
+@click.option('-p', '--parallelism', default=1, type=int,
               help='Mash screen parallelism; number of threads to spawn (default=1)')
 @click.argument('input', type=click.Path(exists=True), nargs=-1, required=True)
 def contains(mash_bin, output, output_type, top_n_results, min_identity, max_pvalue, parallelism, input):
@@ -123,11 +126,11 @@ def contains(mash_bin, output, output_type, top_n_results, min_identity, max_pva
 
     for input_paths, sample_name in (contigs + reads):
         df = mash_screen.vs_refseq(inputs=input_paths,
-                       mash_bin=mash_bin,
-                       sample_name=sample_name,
-                       max_pvalue=max_pvalue,
-                       min_identity=min_identity,
-                       parallelism=parallelism)
+                                   mash_bin=mash_bin,
+                                   sample_name=sample_name,
+                                   max_pvalue=max_pvalue,
+                                   min_identity=min_identity,
+                                   parallelism=parallelism)
         if top_n_results > 0:
             df = df.head(top_n_results)
         dfs.append(df)
