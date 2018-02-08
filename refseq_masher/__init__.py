@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 program_name = 'refseq_masher'
 program_summary = 'Mash MinHash search your sequences against a NCBI RefSeq genomes database'
 program_desc = program_summary + '''
