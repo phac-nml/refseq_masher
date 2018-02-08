@@ -59,7 +59,10 @@ def cli(verbose):
 @click.option('-m', '--min-kmer-threshold', type=int, default=8,
               help='Mash sketch of reads: "Minimum copies of each k-mer '
                    'required to pass noise filter for reads" (default=8)')
-@click.option('-T', '--tmp-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True))
+@click.option('-T', '--tmp-dir',
+              type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True),
+              default='/tmp',
+              help='Temporary analysis files path (where to save temp Mash sketch file) (default="/tmp")')
 @click.argument('input', type=click.Path(exists=True), nargs=-1, required=True)
 def matches(mash_bin, output, output_type, top_n_results, min_kmer_threshold, tmp_dir, input):
     """Find NCBI RefSeq genome matches for an input genome fasta file
