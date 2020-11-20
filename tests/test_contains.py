@@ -26,3 +26,11 @@ def test_fasta(runner):
     df = pd.read_table(StringIO(result.output))
     assert df.top_taxonomy_name.str.contains(expected_top_tax_name).all(), \
         'Top Mash RefSeq result should have "{}" in the top_taxonomy_name field'.format(expected_top_tax_name)
+
+
+def test_small_fastq(runner):
+    fastq = 'tests/data/small.fastq'
+    result = runner.invoke(cli.contains, ['-p', '4', fastq])
+
+    assert result.exit_code == 0, 'Exit code should be 0'
+    assert len(result.stdout) == 0, 'No output results on empty data'
