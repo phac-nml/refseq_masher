@@ -112,14 +112,20 @@ def mash_screen_output_to_dataframe(mash_out: str) -> pd.DataFrame:
         mash_out: Mash screen stdout
 
     Returns:
-        (pd.DataFrame): Mash screen output table ordered by `identity` and `median_multiplicity` columns in descending order
+        (pd.DataFrame): Mash screen output table ordered by `identity` and `median_multiplicity` columns in descending
+            order, or None if the Mash output is missing
     """
-    df = pd.read_table(StringIO(mash_out))
-    ncols = df.shape[1]
-    df.columns = MASH_SCREEN_COLUMNS[:ncols]
-    df.sort_values(by=['identity', 'median_multiplicity'], ascending=[False, False], inplace=True)
-    match_ids = df.match_id
-    refseq_matches = [parse_refseq_info(match_id=match_id) for match_id in match_ids]
-    dfmatch = pd.DataFrame(refseq_matches)
-    dfmerge = pd.merge(dfmatch, df, on='match_id')
+
+    dfmerge = None
+
+    if len(mash_out) > 0:
+        df = pd.read_table(StringIO(mash_out))
+        ncols = df.shape[1]
+        df.columns = MASH_SCREEN_COLUMNS[:ncols]
+        df.sort_values(by=['identity', 'median_multiplicity'], ascending=[False, False], inplace=True)
+        match_ids = df.match_id
+        refseq_matches = [parse_refseq_info(match_id=match_id) for match_id in match_ids]
+        dfmatch = pd.DataFrame(refseq_matches)
+        dfmerge = pd.merge(dfmatch, df, on='match_id')
+
     return dfmerge
