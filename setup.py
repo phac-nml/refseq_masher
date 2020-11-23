@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
-
-from setuptools import find_packages
+from setuptools import find_packages, setup
 
 from refseq_masher import __version__, program_name, program_desc
 
@@ -36,6 +34,7 @@ setup(
     author_email='peter.kruczkiewicz@gmail.com',
     description=program_desc,
     long_description=get_long_description(),
+    long_description_content_type='text/markdown',
     keywords='Mash MinHash RefSeq Taxonomic Classification Containment Sequencing',
     classifiers=classifiers,
     package_dir={program_name: program_name},
