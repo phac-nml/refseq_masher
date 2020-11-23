@@ -27,7 +27,7 @@ def vs_refseq(inputs: Union[str, List[str]],
         parallelism: Mash screen number of parallel threads to spawn
 
     Returns:
-        (pd.DataFrame): Parsed Mash screen results dataframe
+        (pd.DataFrame): Parsed Mash screen results dataframe or None if the output of Mash was empty
     """
     cmd_list = [mash_bin, 'screen',
                 '-v', str(max_pvalue),
@@ -40,9 +40,14 @@ def vs_refseq(inputs: Union[str, List[str]],
         cmd_list.append(inputs)
     else:
         raise TypeError('Unexpected type "{}" for "inputs": {}'.format(type(inputs), inputs))
+
     logging.info('Running Mash Screen with NCBI RefSeq sketch database '
                  'against sample "%s" with inputs: %s', sample_name, inputs)
     exit_code, stdout, stderr = run_command(cmd_list, stderr=None)
+
     df = mash_screen_output_to_dataframe(stdout)
-    df['sample'] = sample_name
+
+    if df is not None:
+        df['sample'] = sample_name
+
     return df

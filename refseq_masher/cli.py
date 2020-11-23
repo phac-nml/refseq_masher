@@ -134,12 +134,21 @@ def contains(mash_bin, output, output_type, top_n_results, min_identity, max_pva
                                    max_pvalue=max_pvalue,
                                    min_identity=min_identity,
                                    parallelism=parallelism)
-        if top_n_results > 0:
-            df = df.head(top_n_results)
-        dfs.append(df)
-    logging.info('Ran Mash Screen on all input. Merging NCBI taxonomic information into results output.')
-    dfout = merge_ncbi_taxonomy_info(pd.concat(dfs))
-    logging.info('Merged taxonomic information into results output')
-    logging.info('Reordering output columns')
-    dfout = order_output_columns(dfout, MASH_SCREEN_ORDERED_COLUMNS)
-    write_dataframe(dfout, output_path=output, output_type=output_type)
+
+        if df is not None:
+            if top_n_results > 0:
+                df = df.head(top_n_results)
+            dfs.append(df)
+
+    logging.info('Ran Mash Screen on all input.')
+
+    if len(dfs) > 0:
+        logging.info('Merging NCBI taxonomic information into results output.')
+        dfout = merge_ncbi_taxonomy_info(pd.concat(dfs))
+        logging.info('Merged taxonomic information into results output')
+        logging.info('Reordering output columns')
+        dfout = order_output_columns(dfout, MASH_SCREEN_ORDERED_COLUMNS)
+        write_dataframe(dfout, output_path=output, output_type=output_type)
+
+    else:
+        logging.info('There were no matches found.')
