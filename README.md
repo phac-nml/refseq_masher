@@ -1,6 +1,6 @@
 # RefSeq Masher
 
-[![travis-ci](https://travis-ci.org/phac-nml/refseq_masher.svg?branch=master)](https://travis-ci.org/phac-nml/refseq_masher) 
+[![Integration Tests](https://github.com/phac-nml/refseq_masher/workflows/Integration%20Tests/badge.svg?branch=master&event=schedule)](https://github.com/phac-nml/refseq_masher/actions?query=branch%3Amaster)
 [![pypi](https://badge.fury.io/py/refseq-masher.svg)](https://pypi.python.org/pypi/refseq_masher/)
 
 
