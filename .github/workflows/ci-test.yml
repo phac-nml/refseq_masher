@@ -48,6 +48,7 @@ jobs:
         run: |
           python --version
           python setup.py -q install
+          pip install pytest
 
       - name: Run Tests
         shell: bash -l {0}
