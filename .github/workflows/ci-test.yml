@@ -1,0 +1,57 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Integration Tests
+
+on:
+  pull_request: # Run on all pull requests
+  push:
+    branches:   # Run on any push to master
+      - master
+  schedule:     # Run weekly on master
+    - cron: 0 2 * * 0
+      branches: master
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: False
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Conda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          activate-environment: foo
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install conda packages
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          conda config --add channels defaults
+          conda config --add channels conda-forge
+          conda config --add channels bioconda
+          conda install mash numpy pandas click -y
+
+      - name: Setup python packages
+        shell: bash -l {0}
+        run: |
+          python --version
+          python setup.py -q install
+          pip install pytest
+
+      - name: Run Tests
+        shell: bash -l {0}
+        run: |
+          refseq_masher --version
+          refseq_masher --help
+          refseq_masher matches --help
+          refseq_masher contains --help
+          pytest
